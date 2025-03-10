@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,5 +8,72 @@
 <body style="text-align: center;">
     <h1>Welcome</h1>
     <p>This will be a calendar app</p>
+</body>
+</html> -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firemní Správa Událostí</title>
+    <link rel="stylesheet" href="{% static 'App/style.css' %}">
+    <!-- <style>
+        body { font-family: Arial, sans-serif; background-color: #f5f7fa; margin: 0; padding: 0; }
+        header { background-color: #4a90e2; color: white; padding: 20px; text-align: center; }
+        nav { padding: 10px; text-align: center; background-color: #e9eff5; }
+        nav a { margin: 0 15px; text-decoration: none; color: #4a90e2; }
+        .container { padding: 20px; max-width: 900px; margin: 0 auto; }
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #333; }
+        .btn { display: inline-block; padding: 10px 20px; background-color: #4a90e2; color: white; text-decoration: none; border-radius: 5px; }
+        footer { background-color: #ddd; text-align: center; padding: 10px; margin-top: 40px; }
+    </style> -->
+</head>
+<body>
+    <header>
+        <h1>Firemní Správa a Plánování Událostí</h1>
+        <p>Jednoduchá organizace školení, porad, team-buildingů a interních akcí</p>
+    </header>
+    <nav>
+        <a href="#features">Vlastnosti</a>
+        <a href="#events">Události</a>
+        <a href="#rooms">Místnosti</a>
+        <a href="#contact">Kontakt</a>
+    </nav>
+    <div class="container">
+        <div id="features" class="section">
+            <h2>Klíčové funkce aplikace</h2>
+            <ul>
+                <li>Správa uživatelů s hierarchickými rolemi (Administrátor, Zaměstnanec)</li>
+                <li>Vytváření, editace a mazání událostí</li>
+                <li>Přihlašování a odhlašování zaměstnanců na akce</li>
+                <li>Rezervace místností a přehled jejich obsazenosti</li>
+                <li>Opakující se události (denní, týdenní, měsíční)</li>
+            </ul>
+        </div>
+
+        <div id="events" class="section">
+            <h2>Přehled kalendáře s událostmi</h2>
+            <p>Přehledný kalendář, který vám umožní sledovat nadcházející události a přihlásit se na ně.</p>
+            <a href="#" class="btn">Zobrazit kalendář</a>
+        </div>
+
+        <div id="rooms" class="section">
+            <h2>Správa místností</h2>
+            <p>Snadné rezervování místností pro různé události s okamžitým přehledem jejich dostupnosti.</p>
+            <a href="#" class="btn">Zobrazit místnosti</a>
+        </div>
+
+        <div id="contact" class="section">
+            <h2>Kontaktujte nás</h2>
+            <p>Máte otázky nebo potřebujete pomoc? Kontaktujte správce systému.</p>
+            <a href="mailto:admin@firma.cz" class="btn">Kontaktovat administrátora</a>
+        </div>
+    </div>
+
+    <footer>
+        &copy; 2025 Firemní Správa Událostí
+    </footer>
 </body>
 </html>
