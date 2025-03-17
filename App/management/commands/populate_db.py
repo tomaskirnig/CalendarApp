@@ -61,30 +61,35 @@ class Command(BaseCommand):
 
         print("- created rooms users")
 
-        # Create Events
+        # Create Events (Updated for date_from and date_to)
         event1 = Event.objects.create(
             title="Tech Conference", description="Annual Tech Conference",
-            date=date(2025, 3, 20), time_start=time(9, 0), time_end=time(17, 0),
+            date_from=date(2025, 3, 20), date_to=date(2025, 3, 21),  # date_to = date_from + 1 day
+            time_start=time(9, 0), time_end=time(17, 0),
             organizer=user1, capacity=50
         )
         event2 = Event.objects.create(
             title="Team Meeting", description="Monthly team meeting",
-            date=date(2025, 3, 22), time_start=time(14, 0), time_end=time(15, 0),
+            date_from=date(2025, 3, 22), date_to=date(2025, 3, 22),
+            time_start=time(14, 0), time_end=time(15, 0),
             organizer=user2, capacity=8
         )
         event3 = Event.objects.create(
             title="Workshop on AI", description="Hands-on workshop on Artificial Intelligence",
-            date=date(2025, 3, 25), time_start=time(10, 0), time_end=time(13, 0),
+            date_from=date(2025, 3, 25), date_to=date(2025, 3, 26),
+            time_start=time(10, 0), time_end=time(13, 0),
             organizer=user3, capacity=30
         )
         event4 = Event.objects.create(
             title="Yoga Session", description="Morning yoga session for employees",
-            date=date(2025, 3, 26), time_start=time(7, 0), time_end=time(8, 0),
+            date_from=date(2025, 3, 26), date_to=date(2025, 3, 26),
+            time_start=time(7, 0), time_end=time(8, 0),
             organizer=user4, capacity=15
         )
         event5 = Event.objects.create(
             title="Product Launch", description="Launch of the new product line",
-            date=date(2025, 3, 28), time_start=time(16, 0), time_end=time(18, 0),
+            date_from=date(2025, 3, 28), date_to=date(2025, 3, 29),
+            time_start=time(16, 0), time_end=time(18, 0),
             organizer=user5, capacity=100
         )
 

@@ -21,7 +21,8 @@ class Room(models.Model):
 class Event(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
-    date = models.DateField()
+    date_from = models.DateField()
+    date_to = models.DateField()
     time_start = models.TimeField()
     time_end = models.TimeField()
     organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organized_events')
