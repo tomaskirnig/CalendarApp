@@ -10,7 +10,7 @@ def home(request):
     return render(request, 'index.html')
 
 # --- USERS ---
-# @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch') # Disable CSRF protection - remove in production
 class UserListView(View):
     def get(self, request):
         """Retrieve all users"""
@@ -27,7 +27,7 @@ class UserListView(View):
         return JsonResponse({'message': 'User created', 'id': user.id})
 
 
-# @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class UserDetailView(View):
     def get(self, request, user_id):
         """Retrieve a single user"""
@@ -51,7 +51,7 @@ class UserDetailView(View):
 
 
 # --- ROOMS ---
-# @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class RoomListView(View):
     def get(self, request):
         """Retrieve all rooms"""
@@ -65,7 +65,7 @@ class RoomListView(View):
         return JsonResponse({'message': 'Room created', 'id': room.id})
 
 
-# @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class RoomDetailView(View):
     def delete(self, request, room_id):
         """Delete a room"""
@@ -73,7 +73,7 @@ class RoomDetailView(View):
         return JsonResponse({'message': 'Room deleted'} if deleted else {'error': 'Room not found'}, status=200 if deleted else 404)
 
 # --- EVENTS ---
-# @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class EventListView(View):
     def get(self, request):
         """Retrieve all events"""
@@ -95,7 +95,7 @@ class EventListView(View):
         return JsonResponse({'message': 'Event created', 'id': event.id})
 
 
-# @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class EventDetailView(View):
     def delete(self, request, event_id):
         """Delete an event"""
@@ -103,7 +103,7 @@ class EventDetailView(View):
         return JsonResponse({'message': 'Event deleted'} if deleted else {'error': 'Event not found'}, status=200 if deleted else 404)
 
 # --- PARTICIPATIONS ---
-# @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class ParticipationListView(View):
     def post(self, request):
         """Add a user to an event"""
@@ -117,7 +117,7 @@ class ParticipationListView(View):
         return JsonResponse({'message': 'Participation added', 'id': participation.id} if created else {'error': 'Already participating'})
 
 
-# @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class ParticipationDetailView(View):
     def delete(self, request, event_id, user_id):
         """Remove a user from an event"""
