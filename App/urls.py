@@ -1,11 +1,11 @@
 from django.urls import path
 from .views import (
-    views, UserListView, UserDetailView, RoomListView, RoomDetailView, EventListView, EventDetailView,
+    home, UserListView, UserDetailView, RoomListView, RoomDetailView, EventListView, EventDetailView,
     ParticipationListView, ParticipationDetailView
 )
 
 urlpatterns = [
-    path('', views.home, name='home'),
+    path('', home, name='home'),
     
      # Users
     path('api/users/', UserListView.as_view(), name='user-list'),
