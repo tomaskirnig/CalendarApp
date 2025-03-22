@@ -1,24 +1,29 @@
-import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import NavigationBar from './Navbar';
+import Calendar from './Calendar';
+import Login from './Login';
+import UserForm from './UserForm';
+import RoomForm from './RoomForm';
+import EventForm from './EventForm';
+import ParticipationForm from './ParticipationForm';
 import './App.css';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <NavigationBar />
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/calendar" element={<Calendar />} />
+          <Route path="/create-user" element={<UserForm />} />
+          <Route path="/create-room" element={<RoomForm />} />
+          <Route path="/create-event" element={<EventForm />} />
+          <Route path="/create-participation" element={<ParticipationForm />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
