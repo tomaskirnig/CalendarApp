@@ -1,3 +1,55 @@
+# Nastavení Backendu
+
+Po stažení Backendu proveďte následující kroky ve složce `Backend`:
+
+1.  **Vytvoření virtuálního prostředí:**
+
+    ```bash
+    py -m venv venv
+    ```
+
+2.  **Aktivace virtuálního prostředí:**
+
+    ```bash
+    .\venv\Scripts\activate
+    ```
+
+3.  **Doinstalování závislostí:**
+
+    ```bash
+    pip install -r .\requirement.txt
+    ```
+
+4.  **Vytvoření tabulek a databáze:**
+
+    ```bash
+    py manage.py makemigrations
+    py manage.py migrate
+    ```
+
+5.  **Spuštění vývojového lokálního serveru:**
+
+    ```bash
+    py manage.py runserver
+    ```
+
+# Nastavení Frontendu
+
+Po stažení Frontendu proveďte následující kroky ve složce `Frontend`:
+
+1.  **Doinstalování závislostí:**
+
+    ```bash
+    npm i
+    ```
+
+2.  **Spuštění vývojového lokálního serveru:**
+
+    ```bash
+    npm run start
+    ```
+
+---
 
 # Systém pro správu událostí
 

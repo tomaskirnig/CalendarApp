@@ -105,6 +105,11 @@ class EventDetailView(View):
 # --- PARTICIPATIONS ---
 @method_decorator(csrf_exempt, name='dispatch')
 class ParticipationListView(View):
+    def get(self, request):
+        """Retrieve all participations"""
+        participations = list(Participation.objects.values('id', 'user_id', 'event_id', 'required'))
+        return JsonResponse({'participations': participations})
+    
     def post(self, request):
         """Add a user to an event"""
         data = json.loads(request.body)
