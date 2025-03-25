@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
+import './main.css';
 
 function RoomForm() {
   const [name, setName] = useState('');
   const [capacity, setCapacity] = useState('');
+  const [message, setMessage] = useState('');
+  const [variant, setVariant] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -20,9 +23,14 @@ function RoomForm() {
     })
       .then(response => response.json())
       .then(data => {
-        console.log('Success:', data);
+        setMessage('Room created successfully!');
+        setVariant('success');
+        setName('');
+        setCapacity('');
       })
       .catch(error => {
+        setMessage('Error creating room.');
+        setVariant('danger');
         console.error('Error:', error);
       });
   };
@@ -32,6 +40,7 @@ function RoomForm() {
       <Row className="justify-content-center">
         <Col xs={12} md={6}>
           <h2>Create Room</h2>
+          {message && <Alert variant={variant}>{message}</Alert>}
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formName">
               <Form.Label>Name</Form.Label>
@@ -53,7 +62,7 @@ function RoomForm() {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="w-100 mt-3">
+            <Button variant="primary" type="submit" className="w-100 mt-3 btn-black">
               Create Room
             </Button>
           </Form>

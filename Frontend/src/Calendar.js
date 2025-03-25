@@ -2,9 +2,10 @@ import React, { useRef, useEffect, useState } from 'react';
 import $ from 'jquery';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
-import './style.css';
+import './main.css';
 
 function Calendar() {
   const calendarRef = useRef(null);
@@ -94,7 +95,7 @@ function Calendar() {
                 </Form.Group>
               </Col>
               <Col xs={4}>
-                <Button variant="primary" onClick={handleFilterEvents} className="w-100">
+                <Button variant="primary" onClick={handleFilterEvents} className="w-100 btn-black">
                   Filter Events
                 </Button>
               </Col>
@@ -103,17 +104,23 @@ function Calendar() {
           <div id='wrap'>
             <FullCalendar
               ref={calendarRef}
-              plugins={[dayGridPlugin, interactionPlugin]}
+              plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
               initialView="dayGridMonth"
               headerToolbar={{
                 left: "prev,next today",
                 center: "title",
-                right: "dayGridMonth,dayGridWeek,dayGridDay"
+                right: "dayGridMonth,timeGridWeek,timeGridDay"
               }}
               editable={true}
               droppable={true}
               events={events}
               eventClick={handleEventClick}
+              slotLabelFormat={{
+                hour: 'numeric',
+                minute: '2-digit',
+                hour12: false
+              }}
+              slotMinTime="00:00:00"
             />
             <div style={{ clear: 'both' }}></div>
           </div>

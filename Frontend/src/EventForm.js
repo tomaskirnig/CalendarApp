@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
+import './main.css';
 
 function EventForm() {
   const [title, setTitle] = useState('');
@@ -11,6 +12,8 @@ function EventForm() {
   const [organizerId, setOrganizerId] = useState('');
   const [capacity, setCapacity] = useState('');
   const [users, setUsers] = useState([]);
+  const [message, setMessage] = useState('');
+  const [variant, setVariant] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:8000/api/users/')
@@ -42,9 +45,20 @@ function EventForm() {
     })
       .then(response => response.json())
       .then(data => {
-        console.log('Success:', data);
+        setMessage('Event created successfully!');
+        setVariant('success');
+        setTitle('');
+        setDescription('');
+        setDateFrom('');
+        setDateTo('');
+        setTimeStart('');
+        setTimeEnd('');
+        setOrganizerId('');
+        setCapacity('');
       })
       .catch(error => {
+        setMessage('Error creating event.');
+        setVariant('danger');
         console.error('Error:', error);
       });
   };
@@ -54,6 +68,7 @@ function EventForm() {
       <Row className="justify-content-center">
         <Col xs={12} md={6}>
           <h2>Create Event</h2>
+          {message && <Alert variant={variant}>{message}</Alert>}
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formTitle">
               <Form.Label>Title</Form.Label>
@@ -137,7 +152,7 @@ function EventForm() {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="w-100 mt-3">
+            <Button variant="primary" type="submit" className="w-100 mt-3 btn-black">
               Create Event
             </Button>
           </Form>

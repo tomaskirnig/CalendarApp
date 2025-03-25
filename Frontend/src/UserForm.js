@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Form, Button, Container, Row, Col } from 'react-bootstrap';
+import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
+import './main.css';
 
 function UserForm() {
   const [name, setName] = useState('');
@@ -8,6 +9,8 @@ function UserForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('');
+  const [message, setMessage] = useState('');
+  const [variant, setVariant] = useState('');
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -28,9 +31,18 @@ function UserForm() {
     })
       .then(response => response.json())
       .then(data => {
-        console.log('Success:', data);
+        setMessage('User created successfully!');
+        setVariant('success');
+        setName('');
+        setSurname('');
+        setUsername('');
+        setEmail('');
+        setPassword('');
+        setRole('');
       })
       .catch(error => {
+        setMessage('Error creating user.');
+        setVariant('danger');
         console.error('Error:', error);
       });
   };
@@ -40,6 +52,7 @@ function UserForm() {
       <Row className="justify-content-center">
         <Col xs={12} md={6}>
           <h2>Create User</h2>
+          {message && <Alert variant={variant}>{message}</Alert>}
           <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formName">
               <Form.Label>Name</Form.Label>
@@ -101,7 +114,7 @@ function UserForm() {
               />
             </Form.Group>
 
-            <Button variant="primary" type="submit" className="w-100 mt-3">
+            <Button variant="primary" type="submit" className="w-100 mt-3 btn-black">
               Create User
             </Button>
           </Form>
