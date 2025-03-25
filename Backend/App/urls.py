@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib import admin
 from .views import (
     home, UserListView, UserDetailView, RoomListView, RoomDetailView, EventListView, EventDetailView,
     ParticipationListView, ParticipationDetailView
@@ -6,6 +7,7 @@ from .views import (
 
 urlpatterns = [
     path('', home, name='home'),
+    path('admin/', admin.site.urls),
     
      # Users
     path('api/users/', UserListView.as_view(), name='user-list'),

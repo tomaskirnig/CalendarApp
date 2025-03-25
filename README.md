@@ -17,7 +17,7 @@ Po stažení Backendu proveďte následující kroky ve složce `Backend`:
 3.  **Doinstalování závislostí:**
 
     ```bash
-    pip install -r .\requirements.txt
+    pip install -r .\requirement.txt
     ```
 
 4.  **Vytvoření tabulek a databáze:**
