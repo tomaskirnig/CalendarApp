@@ -67,6 +67,19 @@ class RoomListView(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class RoomDetailView(View):
+    def get(self, request, room_id):
+        """Retrieve a single room"""
+        room = Room.objects.filter(id=room_id).values().first()
+        return JsonResponse(room if room else {'error': 'Room not found'}, status=404 if not room else 200)
+    
+    def put(self, request, room_id):
+        """Update a room"""
+        data = json.loads(request.body)
+        updated = Room.objects.filter(id=room_id).update(
+            name=data.get('name', ''), capacity=data.get('capacity', '')
+        )
+        return JsonResponse({'message': 'Room updated'} if updated else {'error': 'Room not found'}, status=200 if updated else 404)
+    
     def delete(self, request, room_id):
         """Delete a room"""
         deleted, _ = Room.objects.filter(id=room_id).delete()
@@ -97,6 +110,22 @@ class EventListView(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class EventDetailView(View):
+    def get(self, request, event_id):
+        """Retrieve a single event"""
+        event = Event.objects.filter(id=event_id).values().first()
+        return JsonResponse(event if event else {'error': 'Event not found'}, status=404 if not event else 200)
+    
+    def put(self, request, event_id):
+        """Update an event"""
+        data = json.loads(request.body)
+        updated = Event.objects.filter(id=event_id).update(
+            title=data.get('title', ''), description=data.get('description', ''),
+            date_from=data.get('date_from', ''), date_to=data.get('date_to', ''),
+            time_start=data.get('time_start', ''), time_end=data.get('time_end', ''),
+            organizer_id=data.get('organizer_id', ''), capacity=data.get('capacity', '')
+        )
+        return JsonResponse({'message': 'Event updated'} if updated else {'error': 'Event not found'}, status=200 if updated else 404)
+    
     def delete(self, request, event_id):
         """Delete an event"""
         deleted, _ = Event.objects.filter(id=event_id).delete()
@@ -124,7 +153,59 @@ class ParticipationListView(View):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class ParticipationDetailView(View):
+    def get(self, request, event_id, user_id):
+        """Retrieve a single participation"""
+        participation = Participation.objects.filter(event_id=event_id, user_id=user_id).values().first()
+        return JsonResponse(participation if participation else {'error': 'Participation not found'}, status=404 if not participation else 200)
+    
+    def put(self, request, event_id, user_id):
+        """Update a participation"""
+        data = json.loads(request.body)
+        updated = Participation.objects.filter(event_id=event_id, user_id=user_id).update(
+            required=data.get('required', '')
+        )
+        return JsonResponse({'message': 'Participation updated'} if updated else {'error': 'Participation not found'}, status=200 if updated else 404)
+    
     def delete(self, request, event_id, user_id):
         """Remove a user from an event"""
         deleted, _ = Participation.objects.filter(event_id=event_id, user_id=user_id).delete()
         return JsonResponse({'message': 'Participation removed'} if deleted else {'error': 'Not participating'}, status=200 if deleted else 404)
+
+# --- EVENT-ROOMS ---
+@method_decorator(csrf_exempt, name='dispatch')
+class EventRoomListView(View):
+    def get(self, request):
+        """Retrieve all event-room assignments"""
+        event_rooms = list(EventRoom.objects.values('id', 'event_id', 'room_id'))
+        return JsonResponse({'event_rooms': event_rooms})
+    
+    def post(self, request):
+        """Create a new event-room assignment"""
+        data = json.loads(request.body)
+        event = Event.objects.filter(id=data.get('event_id')).first()
+        room = Room.objects.filter(id=data.get('room_id')).first()
+        if not event or not room:
+            return JsonResponse({'error': 'Event or Room not found'}, status=404)
+        
+        event_room = EventRoom.objects.create(event=event, room=room)
+        return JsonResponse({'message': 'EventRoom created', 'id': event_room.id})
+    
+@method_decorator(csrf_exempt, name='dispatch')
+class EventRoomDetailView(View):
+    def get(self, request, event_room_id):
+        """Retrieve a single event-room assignment"""
+        event_room = EventRoom.objects.filter(id=event_room_id).values().first()
+        return JsonResponse(event_room if event_room else {'error': 'EventRoom not found'}, status=404 if not event_room else 200)
+    
+    def put(self, request, event_room_id):
+        """Update an event-room assignment"""
+        data = json.loads(request.body)
+        updated = EventRoom.objects.filter(id=event_room_id).update(
+            event_id=data.get('event_id', ''), room_id=data.get('room_id', '')
+        )
+        return JsonResponse({'message': 'EventRoom updated'} if updated else {'error': 'EventRoom not found'}, status=200 if updated else 404)
+    
+    def delete(self, request, event_room_id):
+        """Delete an event-room assignment"""
+        deleted, _ = EventRoom.objects.filter(id=event_room_id).delete()
+        return JsonResponse({'message': 'EventRoom deleted'} if deleted else {'error': 'EventRoom not found'}, status=200 if deleted else 404)

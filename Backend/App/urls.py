@@ -2,7 +2,7 @@ from django.urls import path
 from django.contrib import admin
 from .views import (
     home, UserListView, UserDetailView, RoomListView, RoomDetailView, EventListView, EventDetailView,
-    ParticipationListView, ParticipationDetailView
+    ParticipationListView, ParticipationDetailView, EventRoomDetailView, EventRoomListView
 )
 
 urlpatterns = [
@@ -24,4 +24,8 @@ urlpatterns = [
     # Participation
     path('api/participations/', ParticipationListView.as_view(), name='participation-list'),
     path('api/participations/<int:event_id>/<int:user_id>/', ParticipationDetailView.as_view(), name='participation-detail'),
+
+    # EventRooms
+    path('api/eventrooms/', EventRoomListView.as_view(), name='eventroom-list'),
+    path('api/eventrooms/<int:event_room_id>/', EventRoomDetailView.as_view(), name='eventroom-detail')
 ]

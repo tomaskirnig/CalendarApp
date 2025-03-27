@@ -1,12 +1,18 @@
 from django.db import models
 
+ROLE_CHOICES = [
+    ('user', 'User'),
+    ('admin', 'Admin'),
+    ('event_manager', 'Event Manager'),
+]
+
 class User(models.Model):
     name = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(unique=True)
     password_hash = models.CharField(max_length=255)
-    role = models.CharField(max_length=50)  # Can be choices if predefined roles exist
+    role = models.CharField(max_length=50, choices=ROLE_CHOICES) 
 
     def __str__(self):
         return f"{self.name} {self.surname} ({self.username})"
