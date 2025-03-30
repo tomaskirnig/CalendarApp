@@ -28,6 +28,20 @@ class UserListView(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+class LoginView(View):
+    def post(self, request):
+        """Login a user"""
+        data = json.loads(request.body)
+        user = User.objects.filter(email=data['email']).first()
+        if user:
+            if user.password_hash == data['password_hash']:
+                return JsonResponse({'message': 'Login successful', 'user_id': user.id})
+            else:
+                return JsonResponse({'error': 'Invalid password'}, status=401)
+        else:
+            return JsonResponse({'error': 'User not found'}, status=404)
+
+@method_decorator(csrf_exempt, name='dispatch')
 class UserDetailView(View):
     def get(self, request, user_id):
         """Retrieve a single user"""
