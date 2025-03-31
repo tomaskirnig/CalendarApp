@@ -1,7 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.db import connection
 from App.models import User, Room, Event, Participation, EventRoom
-from datetime import date, time
+from datetime import date, time, timedelta
+import random
 
 class Command(BaseCommand):
     help = "Wipe the database (including resetting IDs) and populate it with sample data"
@@ -29,92 +30,116 @@ class Command(BaseCommand):
         self.stdout.write("Populating the database with sample data...")
 
         # Create Users
-        user1 = User.objects.create(
-            name="John", surname="Doe", username="johndoe",
-            email="john@example.com", password_hash="hashedpassword", role="admin"
-        )
-        user2 = User.objects.create(
-            name="Alice", surname="Smith", username="alicesmith",
-            email="alice@example.com", password_hash="hashedpassword", role="user"
-        )
-        user3 = User.objects.create(
-            name="Bob", surname="Brown", username="bobbrown",
-            email="bob@example.com", password_hash="hashedpassword", role="user"
-        )
-        user4 = User.objects.create(
-            name="Emma", surname="Wilson", username="emmawilson",
-            email="emma@example.com", password_hash="hashedpassword", role="user"
-        )
-        user5 = User.objects.create(
-            name="Charlie", surname="Davis", username="charliedavis",
-            email="charlie@example.com", password_hash="hashedpassword", role="user"
-        )
+        first_names = ["James", "Emma", "Michael", "Olivia", "Robert", "Sophia", "David", 
+                      "Isabella", "John", "Ava", "Maria", "William", "Mia", "Carlos", 
+                      "Charlotte", "Daniel", "Amelia", "Thomas", "Harper", "Alexander"]
+        
+        last_names = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller",
+                     "Davis", "Rodriguez", "Martinez", "Hernandez", "Lopez", "Gonzalez",
+                     "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin"]
+        
+        roles = ['admin', 'user', 'event_manager']
+        
+        users = []
+        for i in range(1, 11):
+            first_name = random.choice(first_names)
+            last_name = random.choice(last_names)
+            username = f"{first_name.lower()}{last_name.lower()[:3]}{i}"
+            
+            user = User.objects.create(
+                name=first_name,
+                surname=last_name,
+                username=username,
+                email=f"{username}@example.com",
+                password_hash="password",
+                role=random.choice(roles)
+            )
+            users.append(user)
 
         print("- created users")
 
         # Create Rooms
-        room1 = Room.objects.create(name="Conference Hall", capacity=100)
-        room2 = Room.objects.create(name="Small Meeting Room", capacity=10)
-        room3 = Room.objects.create(name="Board Room", capacity=20)
-        room4 = Room.objects.create(name="Training Room", capacity=30)
-        room5 = Room.objects.create(name="Outdoor Pavilion", capacity=200)
+        room_names = ["Conference Hall", "Meeting Room A", "Meeting Room B", "Board Room", "Training Room"]
+        rooms = [
+            Room.objects.create(name=name, capacity=random.randint(10, 200))
+            for name in room_names
+        ]
+        print("- created rooms")
 
-        print("- created rooms users")
+        # Create Events with realistic names
+        event_names = [
+            "Quarterly Business Review", 
+            "Annual Marketing Strategy Meeting",
+            "New Product Launch: Project Phoenix",
+            "Team Building Workshop",
+            "IT Security Training",
+            "Budget Planning for Q3",
+            "Employee Onboarding Session",
+            "Client Presentation: XYZ Corp",
+            "Executive Leadership Summit",
+            "HR Policy Review",
+            "Sales Team Training",
+            "Project Milestone Review",
+            "Industry Conference Preparation",
+            "Customer Feedback Session",
+            "Year-End Performance Review"
+        ]
 
-        # Create Events (Updated for date_from and date_to)
-        event1 = Event.objects.create(
-            title="Tech Conference", description="Annual Tech Conference",
-            date_from=date(2025, 3, 20), date_to=date(2025, 3, 21),  # date_to = date_from + 1 day
-            time_start=time(9, 0), time_end=time(17, 0),
-            organizer=user1, capacity=50
-        )
-        event2 = Event.objects.create(
-            title="Team Meeting", description="Monthly team meeting",
-            date_from=date(2025, 3, 22), date_to=date(2025, 3, 22),
-            time_start=time(14, 0), time_end=time(15, 0),
-            organizer=user2, capacity=8
-        )
-        event3 = Event.objects.create(
-            title="Workshop on AI", description="Hands-on workshop on Artificial Intelligence",
-            date_from=date(2025, 3, 25), date_to=date(2025, 3, 26),
-            time_start=time(10, 0), time_end=time(13, 0),
-            organizer=user3, capacity=30
-        )
-        event4 = Event.objects.create(
-            title="Yoga Session", description="Morning yoga session for employees",
-            date_from=date(2025, 3, 26), date_to=date(2025, 3, 26),
-            time_start=time(7, 0), time_end=time(8, 0),
-            organizer=user4, capacity=15
-        )
-        event5 = Event.objects.create(
-            title="Product Launch", description="Launch of the new product line",
-            date_from=date(2025, 3, 28), date_to=date(2025, 3, 29),
-            time_start=time(16, 0), time_end=time(18, 0),
-            organizer=user5, capacity=100
-        )
+        event_descriptions = [
+            "Review of business performance and KPIs for the last quarter",
+            "Planning our marketing strategy for the upcoming fiscal year",
+            "Introducing our newest product line to the team",
+            "Activities to improve team collaboration and communication",
+            "Mandatory security training for all employees",
+            "Financial planning and budget allocation for Q3",
+            "Introduction session for new team members",
+            "Presentation of our services to potential client XYZ Corporation",
+            "Leadership skills development for executives",
+            "Review and updates to company HR policies",
+            "Training session for the sales department",
+            "Review of completed project milestones and next steps",
+            "Preparation for upcoming industry conference",
+            "Session to collect and analyze customer feedback",
+            "Annual employee performance evaluations"
+        ]
+
+        today = date.today()
+        events = []
+        for i in range(len(event_names)):
+            start_date = today + timedelta(days=random.randint(1, 60))
+            end_date = start_date + timedelta(days=random.randint(0, 1))
+            start_time = time(hour=random.randint(8, 16), minute=0)
+            end_time = time(hour=start_time.hour + random.randint(1, 3), minute=0)
+            organizer = random.choice(users)
+            event = Event.objects.create(
+                title=event_names[i],
+                description=event_descriptions[i],
+                date_from=start_date,
+                date_to=end_date,
+                time_start=start_time,
+                time_end=end_time,
+                organizer=organizer,
+                capacity=random.randint(10, 100)
+            )
+            events.append(event)
 
         print("- created events")
 
         # Assign Rooms to Events
-        EventRoom.objects.create(event=event1, room=room1)
-        EventRoom.objects.create(event=event2, room=room2)
-        EventRoom.objects.create(event=event3, room=room3)
-        EventRoom.objects.create(event=event4, room=room4)
-        EventRoom.objects.create(event=event5, room=room5)
+        for event in events:
+            room = random.choice(rooms)
+            EventRoom.objects.create(event=event, room=room)
 
         print("- assigned rooms to events")
 
         # Add Participations
-        Participation.objects.create(event=event1, user=user2, required=True)
-        Participation.objects.create(event=event2, user=user1, required=False)
-        Participation.objects.create(event=event1, user=user3, required=True)
-        Participation.objects.create(event=event1, user=user4, required=False)
-        Participation.objects.create(event=event2, user=user3, required=True)
-        Participation.objects.create(event=event3, user=user5, required=False)
-        Participation.objects.create(event=event4, user=user2, required=True)
-        Participation.objects.create(event=event5, user=user1, required=False)
-        Participation.objects.create(event=event5, user=user4, required=True)
-
+        for event in events:
+            participants = random.sample(users, random.randint(1, len(users)))
+            for user in participants:
+                Participation.objects.create(
+                    event=event, user=user, required=random.choice([True, False])
+                )
+                
         print("- added participations")
 
-        self.stdout.write(self.style.SUCCESS("Database successfully populated with sample data!"))
+        self.stdout.write(self.style.SUCCESS("Database successfully populated with realistic sample data!"))

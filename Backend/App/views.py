@@ -145,6 +145,66 @@ class EventDetailView(View):
         deleted, _ = Event.objects.filter(id=event_id).delete()
         return JsonResponse({'message': 'Event deleted'} if deleted else {'error': 'Event not found'}, status=200 if deleted else 404)
 
+@method_decorator(csrf_exempt, name='dispatch')
+class EventDetailWithOrganizerView(View):
+    def get(self, request, event_id):
+        """Retrieve a single event with organizer details"""
+        event = Event.objects.filter(id=event_id).first()
+        
+        if not event:
+            return JsonResponse({'error': 'Event not found'}, status=404)
+        
+        # Convert event to dictionary
+        event_data = {
+            'id': event.id,
+            'title': event.title,
+            'description': event.description,
+            'date_from': event.date_from,
+            'date_to': event.date_to,
+            'time_start': event.time_start,
+            'time_end': event.time_end,
+            'capacity': event.capacity,
+            'created_at': event.created_at,
+            'organizer': {
+                'id': event.organizer.id,
+                'name': event.organizer.name,
+                'surname': event.organizer.surname,
+                'username': event.organizer.username,
+                'email': event.organizer.email
+            }
+        }
+        
+        return JsonResponse(event_data)
+    
+@method_decorator(csrf_exempt, name='dispatch')
+class EventListWithOrganizerView(View):
+    def get(self, request):
+        """Retrieve all events with organizer details"""
+        events = Event.objects.all()
+        events_data = []
+
+        for event in events:
+            events_data.append({
+                'id': event.id,
+                'title': event.title,
+                'description': event.description,
+                'date_from': event.date_from,
+                'date_to': event.date_to,
+                'time_start': event.time_start,
+                'time_end': event.time_end,
+                'capacity': event.capacity,
+                'created_at': event.created_at,
+                'organizer': {
+                    'id': event.organizer.id,
+                    'name': event.organizer.name,
+                    'surname': event.organizer.surname,
+                    'username': event.organizer.username,
+                    'email': event.organizer.email
+                }
+            })
+        
+        return JsonResponse({'events': events_data})
+
 # --- PARTICIPATIONS ---
 @method_decorator(csrf_exempt, name='dispatch')
 class ParticipationListView(View):
