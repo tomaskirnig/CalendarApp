@@ -32,6 +32,11 @@ Po stažení Backendu proveďte následující kroky ve složce `Backend`:
     ```bash
     py manage.py runserver
     ```
+6.  **(Volitelné) Naplnění DB daty:**
+
+    ```bash
+    py manage.py populate_db
+    ```
 
 # Nastavení Frontendu
 
