@@ -27,7 +27,7 @@ function Calendar() {
       .catch(error => console.error('Error fetching users:', error));
 
     // Fetch events from API
-    fetch('http://localhost:8000/api/events/')
+    fetch('http://localhost:8000/api/events/with-organizer/')
       .then(response => response.json())
       .then(data => {
         const fetchedEvents = data.events.map(event => ({
@@ -36,7 +36,7 @@ function Calendar() {
           start: `${event.date_from}T${event.time_start}`,
           end: `${event.date_to}T${event.time_end}`,
           description: event.description,
-          organizer_id: event.organizer_id,
+          organizer: event.organizer,
           capacity: event.capacity
         }));
         setAllEvents(fetchedEvents);
@@ -135,7 +135,7 @@ function Calendar() {
             <p><strong>Description:</strong> {selectedEvent.extendedProps.description}</p>
             <p><strong>Start:</strong> {selectedEvent.start.toLocaleString()}</p>
             <p><strong>End:</strong> {selectedEvent.end.toLocaleString()}</p>
-            <p><strong>Organizer ID:</strong> {selectedEvent.extendedProps.organizer_id}</p>
+            <p><strong>Organizer:</strong> {selectedEvent.extendedProps.organizer.name} {selectedEvent.extendedProps.organizer.surname}</p>
             <p><strong>Capacity:</strong> {selectedEvent.extendedProps.capacity}</p>
           </Modal.Body>
           <Modal.Footer>
