@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.hashers import make_password, check_password
 
 ROLE_CHOICES = [
     ('user', 'User'),
@@ -16,6 +17,12 @@ class User(models.Model):
 
     def __str__(self):
         return f"{self.name} {self.surname} ({self.username})"
+    
+    def set_password(self, raw_password):
+        self.password_hash = make_password(raw_password)
+
+    def check_password(self, raw_password):
+        return check_password(raw_password, self.password_hash)
 
 class Room(models.Model):
     name = models.CharField(max_length=255)

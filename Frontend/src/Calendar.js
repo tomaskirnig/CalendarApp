@@ -75,7 +75,6 @@ function Calendar() {
     setModalIsOpen(false);
     setSelectedEvent(null);
   };
-
   return (
     <div className="container-fluid mt-4">
       <div className="row justify-content-center">

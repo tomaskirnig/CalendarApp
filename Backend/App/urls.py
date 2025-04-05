@@ -2,7 +2,7 @@ from django.urls import path
 from django.contrib import admin
 from .views import (
     home, UserListView, UserDetailView, RoomListView, RoomDetailView, EventListView, EventDetailView,
-    ParticipationListView, ParticipationDetailView, EventRoomDetailView, EventRoomListView, EventDetailWithOrganizerView, EventListWithOrganizerView
+    ParticipationListView, ParticipationDetailView, EventRoomDetailView, EventRoomListView, EventDetailWithOrganizerView, EventListWithOrganizerView, LoginView
 )
 
 urlpatterns = [
@@ -12,6 +12,9 @@ urlpatterns = [
      # Users
     path('api/users/', UserListView.as_view(), name='user-list'),
     path('api/users/<int:user_id>/', UserDetailView.as_view(), name='user-detail'),
+
+    # Login
+    path('api/login/', LoginView.as_view(), name='user-login'),
 
     # Rooms
     path('api/rooms/', RoomListView.as_view(), name='room-list'),

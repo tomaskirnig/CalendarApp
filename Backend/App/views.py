@@ -22,20 +22,22 @@ class UserListView(View):
         data = json.loads(request.body)
         user = User.objects.create(
             name=data['name'], surname=data['surname'], username=data['username'],
-            email=data['email'], password_hash=data['password_hash'], role=data['role']
+            email=data['email'], role=data['role']
         )
+        user.set_password(data['password_hash'])
+        user.save()
         return JsonResponse({'message': 'User created', 'id': user.id})
 
 
-#@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class LoginView(View):
     def post(self, request):
         """Login a user"""
         data = json.loads(request.body)
         user = User.objects.filter(email=data['email']).first()
         if user:
-            if user.password_hash == data['password_hash']:
-                return JsonResponse({'message': 'Login successful', 'user_id': user.id})
+            if user.check_password(data['password']):
+                return JsonResponse({'message': 'Login successful', 'user_id': user.id, 'user_name': user.name, 'user_role': user.role })
             else:
                 return JsonResponse({'error': 'Invalid password'}, status=401)
         else:

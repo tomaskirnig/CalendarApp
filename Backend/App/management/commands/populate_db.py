@@ -51,9 +51,10 @@ class Command(BaseCommand):
                 surname=last_name,
                 username=username,
                 email=f"{username}@example.com",
-                password_hash="password",
                 role=random.choice(roles)
             )
+            user.set_password("password")
+            user.save()
             users.append(user)
 
         print("- created users")
