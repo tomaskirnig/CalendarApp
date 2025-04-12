@@ -10,7 +10,7 @@ def home(request):
     return render(request, 'index.html')
 
 # --- USERS ---
-#@method_decorator(csrf_exempt, name='dispatch') # Disable CSRF protection - remove in production
+@method_decorator(csrf_exempt, name='dispatch') # Disable CSRF protection - remove in production
 class UserListView(View):
     def get(self, request):
         """Retrieve all users"""
@@ -43,7 +43,7 @@ class LoginView(View):
         else:
             return JsonResponse({'error': 'User not found'}, status=404)
 
-#@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class UserDetailView(View):
     def get(self, request, user_id):
         """Retrieve a single user"""
@@ -67,7 +67,7 @@ class UserDetailView(View):
 
 
 # --- ROOMS ---
-#@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class RoomListView(View):
     def get(self, request):
         """Retrieve all rooms"""
@@ -81,7 +81,7 @@ class RoomListView(View):
         return JsonResponse({'message': 'Room created', 'id': room.id})
 
 
-#@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class RoomDetailView(View):
     def get(self, request, room_id):
         """Retrieve a single room"""
@@ -102,7 +102,7 @@ class RoomDetailView(View):
         return JsonResponse({'message': 'Room deleted'} if deleted else {'error': 'Room not found'}, status=200 if deleted else 404)
 
 # --- EVENTS ---
-#@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class EventListView(View):
     def get(self, request):
         """Retrieve all events"""
@@ -116,15 +116,25 @@ class EventListView(View):
         if not organizer:
             return JsonResponse({'error': 'Organizer not found'}, status=404)
 
+        # Create the event
         event = Event.objects.create(
             title=data['title'], description=data['description'], date_from=data['date_from'],
             date_to=data['date_to'], time_start=data['time_start'], time_end=data['time_end'],
             organizer=organizer, capacity=data['capacity']
         )
+
+        # Automatically create a participation for the organizer with status 'accepted'
+        Participation.objects.create(
+            event=event,
+            user=organizer,
+            required=True,  # Mark as required if necessary
+            status='accepted'
+        )
+
         return JsonResponse({'message': 'Event created', 'id': event.id})
 
 
-#@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class EventDetailView(View):
     def get(self, request, event_id):
         """Retrieve a single event"""
@@ -147,7 +157,7 @@ class EventDetailView(View):
         deleted, _ = Event.objects.filter(id=event_id).delete()
         return JsonResponse({'message': 'Event deleted'} if deleted else {'error': 'Event not found'}, status=200 if deleted else 404)
 
-#@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class EventDetailWithOrganizerView(View):
     def get(self, request, event_id):
         """Retrieve a single event with organizer details"""
@@ -178,7 +188,7 @@ class EventDetailWithOrganizerView(View):
         
         return JsonResponse(event_data)
     
-#@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class EventListWithOrganizerView(View):
     def get(self, request):
         """Retrieve all events with organizer details"""
@@ -208,11 +218,11 @@ class EventListWithOrganizerView(View):
         return JsonResponse({'events': events_data})
 
 # --- PARTICIPATIONS ---
-#@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class ParticipationListView(View):
     def get(self, request):
         """Retrieve all participations"""
-        participations = list(Participation.objects.values('id', 'user_id', 'event_id', 'required'))
+        participations = list(Participation.objects.values('id', 'user_id', 'event_id', 'required', 'status'))  # Include 'status'
         return JsonResponse({'participations': participations})
     
     def post(self, request):
@@ -223,11 +233,30 @@ class ParticipationListView(View):
         if not user or not event:
             return JsonResponse({'error': 'User or Event not found'}, status=404)
 
-        participation, created = Participation.objects.get_or_create(user=user, event=event, required=data.get('required', False))
+        # Automatically accept participation if required=True
+        participation, created = Participation.objects.get_or_create(
+            user=user,
+            event=event,
+            defaults={'required': data.get('required', False), 'status': 'accepted' if data.get('required', False) else 'pending'}
+        )
         return JsonResponse({'message': 'Participation added', 'id': participation.id} if created else {'error': 'Already participating'})
 
+    def delete(self, request):
+        """Delete a participation"""
+        try:
+            data = json.loads(request.body)
+            event_id = data.get('event_id')
+            user_id = data.get('user_id')
+            participation = Participation.objects.get(event_id=event_id, user_id=user_id)
+            participation.delete()
+            return JsonResponse({'message': 'Participation deleted successfully'}, status=200)
+        except Participation.DoesNotExist:
+            return JsonResponse({'error': 'Participation not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
 
-#@method_decorator(csrf_exempt, name='dispatch')
+
+@method_decorator(csrf_exempt, name='dispatch')
 class ParticipationDetailView(View):
     def get(self, request, event_id, user_id):
         """Retrieve a single participation"""
@@ -236,11 +265,22 @@ class ParticipationDetailView(View):
     
     def put(self, request, event_id, user_id):
         """Update a participation"""
-        data = json.loads(request.body)
-        updated = Participation.objects.filter(event_id=event_id, user_id=user_id).update(
-            required=data.get('required', '')
-        )
-        return JsonResponse({'message': 'Participation updated'} if updated else {'error': 'Participation not found'}, status=200 if updated else 404)
+        try:
+            data = json.loads(request.body)
+            status = data.get('status')
+            if status not in ['pending', 'accepted', 'declined']:
+                return JsonResponse({'error': 'Invalid status'}, status=400)
+
+            participation = Participation.objects.filter(event_id=event_id, user_id=user_id).first()
+            if not participation:
+                return JsonResponse({'error': 'Participation not found'}, status=404)
+
+            participation.status = status
+            participation.save()
+
+            return JsonResponse({'message': f'Participation status updated to {status}'}, status=200)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
     
     def delete(self, request, event_id, user_id):
         """Remove a user from an event"""
@@ -248,7 +288,7 @@ class ParticipationDetailView(View):
         return JsonResponse({'message': 'Participation removed'} if deleted else {'error': 'Not participating'}, status=200 if deleted else 404)
 
 # --- EVENT-ROOMS ---
-#@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class EventRoomListView(View):
     def get(self, request):
         """Retrieve all event-room assignments"""
@@ -266,7 +306,7 @@ class EventRoomListView(View):
         event_room = EventRoom.objects.create(event=event, room=room)
         return JsonResponse({'message': 'EventRoom created', 'id': event_room.id})
     
-#@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class EventRoomDetailView(View):
     def get(self, request, event_room_id):
         """Retrieve a single event-room assignment"""

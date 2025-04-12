@@ -49,6 +49,7 @@ class Participation(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     required = models.BooleanField(default=False)
+    status = models.CharField(max_length=10, choices=[('pending', 'Pending'), ('accepted', 'Accepted'), ('declined', 'Declined')], default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

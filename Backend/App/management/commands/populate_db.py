@@ -137,8 +137,12 @@ class Command(BaseCommand):
         for event in events:
             participants = random.sample(users, random.randint(1, len(users)))
             for user in participants:
+                required = random.choice([True, False])
                 Participation.objects.create(
-                    event=event, user=user, required=random.choice([True, False])
+                    event=event,
+                    user=user,
+                    required=required,
+                    status='accepted' if required else 'pending'
                 )
                 
         print("- added participations")
